@@ -1,4 +1,4 @@
-FROM ubuntu:17.04
+FROM ubuntu:17.10
 LABEL author="Zack Ulissi <zulissi@andrew.cmu.edu>"
 
 RUN apt-get update
@@ -18,3 +18,4 @@ RUN /bin/bash -c "cd /home/CatalystsRE;npm install"
 EXPOSE 3000
 
 ADD /start.sh /home/
+CMD /bin/bash -c "source /home/start.sh"

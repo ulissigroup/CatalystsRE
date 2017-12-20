@@ -30,13 +30,14 @@ let selectY = v => {
   if (!volcanoMode) {
     return v.offset;
   } else {
-    return Math.abs(selectX(v) + v.offset/3);
+    return v.offset/3 + Math.abs(selectX(v)-minimumValue);
   }
 };
 let selectMongoID = v => v.mongo_id.substring(10,v.mongo_id.length - 2);
 let selectFormula = v => v.formula;
 let selectFormulaName = v => v.formula;
 let selectMPID    = v => v.mpid;
+let selectCatalog    = v => v.catalog;
 let selectMiller  = v => v.miller;
 let selectTop     = v => String(v.top);
 let selectNextnearestcoordination = v => v.nextnearestcoordination;
@@ -403,8 +404,8 @@ let drawGraph = () => {
   xRange = graphRange;
 
   let yRange = [
-    d3.min(currentData, d => selectY(d)),
-    d3.max(currentData, d => selectY(d)) + 0.2
+    d3.min(currentData, d => selectY(d))-0.2,
+    d3.max(currentData, d => selectY(d)) 
   ];
   if (!volcanoMode){ yRange = [0, 1];}
 
@@ -455,12 +456,21 @@ let drawGraph = () => {
     .attr('class', 'd3-popover')
     .offset([-10, 0])
     .html(d => {
-      let image_url = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" +
-      d._id + "-" + selectFormulaName(d) + "-side.png";
+      if (selectCatalog(d)) {
+          image_url = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-CO.png";
+          image_url_side = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-CO-side.png";
+      }  else {
+          image_url = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + ".png";
+          image_url_side = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-side.png";
+      }
+      //let image_url = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" +
+      //d._id + "-" + selectFormulaName(d) + "-side.png";
       let info =
         "<h2>" + selectFormulaName(d) + "</h2>" +
-        "<img src='https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + ".png'>" +
-        // "<img src='https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/'" +
+        "<img src='" + image_url + "'>" +
+        "<img src='" + image_url_side + "'>" +
+        //"<img src='https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-side.png'>" +
+        //"<img src='https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/'" +
           // d._id + + "-" + selectFormulaName(d) + ".png'>" +
         "<p><strong>MPID:</strong> " + selectMPID(d) + "</p>" +
         "<p><strong>Miller Index:</strong> " + selectMiller(d) + "</p>" +
