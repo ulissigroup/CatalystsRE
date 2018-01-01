@@ -25,7 +25,9 @@ let graphRange = [-3, 3];
 //                         SELECTORS
 /*************************************************************/
 let selectEnergy = v => { if (v && v.energy){ return v.energy; }};
-let selectX = v => selectEnergy(v) % 3;
+let selectEnergyCO = v => {if (v && v.energies && v.energies.CO){ return v.energies.CO[0] }};
+let selectX = v => selectEnergyCO(v);
+//let selectX = v => selectEnergy(v) % 3;
 let selectY = v => {
   if (!volcanoMode) {
     return v.offset;
@@ -33,11 +35,12 @@ let selectY = v => {
     return v.offset/3 + Math.abs(selectX(v)-minimumValue);
   }
 };
-let selectMongoID = v => v.mongo_id.substring(10,v.mongo_id.length - 2);
+let selectMongoID = v => v.mongo_id;
+//let selectMongoID = v => v.mongo_id.substring(10,v.mongo_id.length - 2);
 let selectFormula = v => v.formula;
 let selectFormulaName = v => v.formula;
 let selectMPID    = v => v.mpid;
-let selectCatalog    = v => v.catalog;
+let selectCatalog    = v => v["catalog?"];
 let selectMiller  = v => v.miller;
 let selectTop     = v => String(v.top);
 let selectNextnearestcoordination = v => v.nextnearestcoordination;
@@ -405,7 +408,7 @@ let drawGraph = () => {
 
   let yRange = [
     d3.min(currentData, d => selectY(d))-0.2,
-    d3.max(currentData, d => selectY(d)) 
+    d3.max(currentData, d => selectY(d))+0.2 
   ];
   if (!volcanoMode){ yRange = [0, 1];}
 
@@ -456,7 +459,7 @@ let drawGraph = () => {
     .attr('class', 'd3-popover')
     .offset([-10, 0])
     .html(d => {
-      if (selectCatalog(d)) {
+      if (selectCatalog(d)==true) {
           image_url = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-CO.png";
           image_url_side = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-CO-side.png";
       }  else {
@@ -530,7 +533,7 @@ let drawGraph = () => {
     .attr("x", width/2)
     .attr("y", xAxisHeight + 40)
     .attr("font-size", 20)
-    .text("Gh (eV)");
+    .text("dE (eV)");
 
 };
 

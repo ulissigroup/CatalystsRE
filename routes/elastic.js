@@ -7,7 +7,7 @@ const elasticClient = new ElasticSearch.Client({
 const getAllRecords = {
   index: 'structures',
   q: '*:*',
-  size: 100
+  size: 1000
 };
 
 exports.init = function (app) {
@@ -39,7 +39,7 @@ exports.init = function (app) {
               "must": buildFilters(req)
             }
           },
-          size: 100
+          size: 1000
         }
       };
       return query;
@@ -73,7 +73,7 @@ exports.init = function (app) {
   function buildFilters(req){
     let filters = [];
     if (req.query.mpid){
-      filters.push({ "match": { "mpid":  req.query.mpid }});
+      filters.push({ "match": {"mpid":  req.query.mpid }});
     }
     if (req.query.nextnearestcoordination){
       filters.push({ "match": { "nextnearestcoordination":  req.query.nextnearestcoordination }});
@@ -99,14 +99,14 @@ exports.init = function (app) {
         }
       }});
     }
-    if (req.query.energyLow && req.query.energyHigh){
-      filters.push( {"range" : {
-        "shift" : {
-            "gt" : req.query.shiftLow,
-            "lt" : req.query.shiftHigh
-        }
-      }});
-    }
+    //if (req.query.energyLow && req.query.energyHigh){
+    //  filters.push( {"range" : {
+    //    "shift" : {
+     //       "gt" : req.query.shiftLow,
+    //        "lt" : req.query.shiftHigh
+    //    }
+    //  }});
+    //}
     return filters;
 }
 };
