@@ -407,8 +407,8 @@ let drawGraph = () => {
   xRange = graphRange;
 
   let yRange = [
-    d3.min(currentData, d => selectY(d))-0.2,
-    d3.max(currentData, d => selectY(d))+0.2 
+    d3.min(currentData, d => selectY(d))-0.1,
+    d3.max(currentData, d => selectY(d)) 
   ];
   if (!volcanoMode){ yRange = [0, 1];}
 
@@ -457,7 +457,8 @@ let drawGraph = () => {
 
   let popover = d3.tip()
     .attr('class', 'd3-popover')
-    .offset([-10, 0])
+    .offset([+10, 0])
+    .direction('s')
     .html(d => {
       if (selectCatalog(d)==true) {
           image_url = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-CO.png";
