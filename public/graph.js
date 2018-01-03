@@ -42,7 +42,7 @@ let selectFormulaName = v => v.formula;
 let selectMPID    = v => v.mpid;
 let selectCatalog    = v => v["catalog?"];
 let selectMiller  = v => v.miller;
-let selectTop     = v => String(v.top);
+let selectSide     = v => { if (v.top) { return 'Top';} else {return 'Bot';} }
 let selectNextnearestcoordination = v => v.nextnearestcoordination;
 let selectFmax    = () => "0"; // String(v.fmax);
 let selectNeighborCoord = v => {
@@ -60,7 +60,7 @@ let filters = {};
 let getFormulas      = data => Array.from(new Set(data.map (v => selectFormula(v))));
 let getMPID          = data => Array.from(new Set(data.map (v => selectMPID(v))));
 let getMiller        = data => Array.from(new Set(data.map (v => selectMiller(v))));
-let getTop           = data => Array.from(new Set(data.map (v => selectTop(v))));
+let getSide           = data => Array.from(new Set(data.map (v => selectSide(v))));
 let getNextnearestcoordination = data => Array.from(new Set(data.map (v => selectNextnearestcoordination(v))));
 let getneighborcoord = data => Array.from(new Set(data.map (v => selectNeighborCoord(v))));
 let getCoordination  = data => Array.from(new Set(data.map (v => selectCoordination(v))));
@@ -168,11 +168,11 @@ let setFilterEvents = () => {
   };
 
   document.getElementById("top").onclick = () => {
-    updateFilter("top", selectTop);
+    updateFilter("top", selectSide);
   };
 
   document.getElementById("top_input").oninput = () => {
-    updateFilter("top", selectTop);
+    updateFilter("top", selectSide);
   };
 
   document.getElementById("coordination").onclick = () => {
@@ -286,7 +286,7 @@ let updateColorSettings = () => {
       values = getMiller(currentData);
       break;
     case "top":
-      values = getTop(currentData);
+      values = getSide(currentData);
       break;
     case "coordination":
       values = getCoordination(currentData);
@@ -330,7 +330,7 @@ let renderSavedPoints = () => {
   let point;
   for (let i = 0; i < ids.length; i++) {
     point = favoritePoints[ids[i]];
-    innerHTML += ("<li>" + selectFormulaName(point) + "</li>");
+    innerHTML += ("<li>" + selectX(point).toFixed(2)+ " " +selectFormula(point) + ", " + selectMPID(point)+"("+selectMiller(point) + ") " +selectSide(point) + "</li>");
   }
   if (innerHTML === "") {
     innerHTML = "<p>Click on a point to add it to your list.</p>";
@@ -360,7 +360,7 @@ let drawGraph = () => {
       selectColorFilter = selectMiller;
       break;
     case "top":
-      selectColorFilter = selectTop;
+      selectColorFilter = selectSide;
       break;
     case "coordination":
       selectColorFilter = selectCoordination;
@@ -375,7 +375,7 @@ let drawGraph = () => {
       selectColorFilter = selectFmax;
       break;
     default:
-      selectColorFilter = selectTop;
+      selectColorFilter = selectSide;
       break;
   }
 
@@ -466,12 +466,15 @@ let drawGraph = () => {
     .offset([+10, 0])
     .direction('s')
     .html(d => {
+      let source = ''
       if (selectCatalog(d)==true) {
           image_url = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-CO.png";
           image_url_side = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-CO-side.png";
+          source = 'ML'
       }  else {
           image_url = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + ".png";
           image_url_side = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" + selectMongoID(d) + "-side.png";
+          source = 'DFT'
       }
       //let image_url = "https://s3.us-east-2.amazonaws.com/catalyst-thumbnails/" +
       //d._id + "-" + selectFormulaName(d) + "-side.png";
@@ -484,8 +487,11 @@ let drawGraph = () => {
           // d._id + + "-" + selectFormulaName(d) + ".png'>" +
         "<p><strong>MPID:</strong> " + selectMPID(d) + "</p>" +
         "<p><strong>Miller Index:</strong> " + selectMiller(d) + "</p>" +
-        "<p><strong>Top:</strong> " + selectTop(d) + "</p>" +
-        "<p><strong>Coordination:</strong> " + selectCoordination(d) + "</p>"
+        "<p><strong>Side:</strong> " + selectSide(d) + "</p>" +
+        "<p><strong>Coordination:</strong> " + selectCoordination(d) + "</p>" + 
+        "<p><strong>Source:</strong> " + source + "</p>"  + 
+        "<p><strong>dE:</strong> " + selectX(d).toFixed(2) + " eV </p>"
+
       return info;
     });
 
