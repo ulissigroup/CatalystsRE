@@ -436,7 +436,7 @@ let drawGraph = () => {
     .attr('margin', 10);
 
     svg.append("rect")
-    .attr("x", scaleX(minimumValue))
+    .attr("x", scaleX(minimumValue)-10)
     .attr("y", 0)
     .attr("width", 20)
     .attr("height", "100%")

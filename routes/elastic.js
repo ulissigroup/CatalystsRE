@@ -31,12 +31,14 @@ exports.init = function (app) {
   function generateQuery(req) {
     if(req.query){
       // console.log(req.query);
+      filters=buildFilters(req)
       let query = {
         index: 'structures',
         body: {
           "query": {
             "bool": {
-              "must": buildFilters(req)
+              "must": filters[0],
+              "must_not": filters[1]
             }
           },
           size: 2000
@@ -72,6 +74,7 @@ exports.init = function (app) {
 
   function buildFilters(req){
     let filters = [];
+    let must_not = [];
     if (req.query.mpid){
       filters.push({ "match": {"mpid":  req.query.mpid }});
     }
@@ -84,6 +87,22 @@ exports.init = function (app) {
     if (req.query.formula){
       console.log(req.query.formula);
       filters.push({ "match": { "formula":  req.query.formula }});
+    }
+    if (req.query.formulaContains) {
+      //filters.push({"wildcard":{"formula":"*"+req.query.elementContains+"*"}})
+      let elements=req.query.formulaContains.match(/.{1,2}/g)
+      let count = elements.length
+      for (var i = 0; i < count;i++) {
+          filters.push({"query_string":{"default_field":"formula","query":"*"+elements[i]+"*"}})
+      }
+    }
+    if (req.query.formulaNotContains) {
+      //filters.push({"wildcard":{"formula":"*"+req.query.elementContains+"*"}})
+      let elements=req.query.formulaNotContains.match(/.{1,2}/g)
+      let count = elements.length
+      for (var i = 0; i < count;i++) {
+          must_not.push({"query_string":{"default_field":"formula","query":"*"+elements[i]+"*"}})
+      }
     }
     if (req.query.catalog){
       filters.push({ "match": { "catalog?":  req.query.catalog }});
@@ -107,6 +126,6 @@ exports.init = function (app) {
     //    }
     //  }});
     //}
-    return filters;
+    return [filters,must_not];
 }
 };
