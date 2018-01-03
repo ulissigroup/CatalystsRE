@@ -7,7 +7,7 @@ const elasticClient = new ElasticSearch.Client({
 const getAllRecords = {
   index: 'structures',
   q: '*:*',
-  size: 1000
+  size: 2000
 };
 
 exports.init = function (app) {
@@ -39,7 +39,7 @@ exports.init = function (app) {
               "must": buildFilters(req)
             }
           },
-          size: 1000
+          size: 2000
         }
       };
       return query;
@@ -93,7 +93,7 @@ exports.init = function (app) {
     }
     if (req.query.energyLow && req.query.energyHigh){
       filters.push( {"range" : {
-        "energy" : {
+        "energies.CO" : {
             "gt" : req.query.energyLow,
             "lt" : req.query.energyHigh
         }

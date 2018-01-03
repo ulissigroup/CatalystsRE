@@ -6,7 +6,7 @@ let scriptName = lastScript;
 let data = JSON.parse(scriptName.getAttribute('data'));
 
 for (let i = 0; i < data.length; i++) {
-  data[i].offset = Math.random();
+  data[i].offset = Math.random()-0.5;
 }
 
 let currentData = data;
@@ -25,14 +25,14 @@ let graphRange = [-3, 3];
 //                         SELECTORS
 /*************************************************************/
 let selectEnergy = v => { if (v && v.energy){ return v.energy; }};
-let selectEnergyCO = v => {if (v && v.energies && v.energies.CO){ return v.energies.CO[0] }};
+let selectEnergyCO = v => {if (v && v.energies && v.energies.CO){ return v.energies.CO }};
 let selectX = v => selectEnergyCO(v);
 //let selectX = v => selectEnergy(v) % 3;
 let selectY = v => {
   if (!volcanoMode) {
     return v.offset;
   } else {
-    return v.offset/3 + Math.abs(selectX(v)-minimumValue);
+    return v.offset*(graphRange[1]-graphRange[0])/10.0 + Math.abs(selectX(v)-minimumValue);
   }
 };
 let selectMongoID = v => v.mongo_id;
@@ -392,22 +392,28 @@ let drawGraph = () => {
   const height = window.innerHeight - 20;
 
   let xRange = [
-    Math.floor(d3.min(currentData, d => selectX(d))),
-    Math.ceil(d3.max(currentData, d => selectX(d)))
+    Math.floor(d3.min(currentData, d => selectX(d))*10)/10, 
+    Math.ceil(d3.max(currentData, d => selectX(d))*10)/10
   ];
 
   document.getElementById("high").min = xRange[0];
   document.getElementById("low").min = xRange[0];
+  if (graphRange[0]<xRange[0]) {
+    graphRange[0]=xRange[0]
+  }
   document.getElementById("low").value = graphRange[0];
 
   document.getElementById("high").max = xRange[1];
   document.getElementById("low").max = xRange[1];
+  if (graphRange[1]>xRange[1]) {
+    graphRange[1]=xRange[1]
+  }
   document.getElementById("high").value = graphRange[1];
 
   xRange = graphRange;
 
   let yRange = [
-    d3.min(currentData, d => selectY(d))-0.1,
+    d3.min(currentData, d => selectY(d)),
     d3.max(currentData, d => selectY(d)) 
   ];
   if (!volcanoMode){ yRange = [0, 1];}
