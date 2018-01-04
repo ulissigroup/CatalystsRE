@@ -12,7 +12,7 @@ const getAllRecords = {
 
 exports.init = function (app) {
   app.get("/import", importHandler);
-  app.get("/db", queryHandler);
+  app.get("/volcano", queryHandler);
   app.get("/", queryHandler);
 
   // Route Handlers
@@ -90,7 +90,7 @@ exports.init = function (app) {
     }
     if (req.query.formulaContains) {
       //filters.push({"wildcard":{"formula":"*"+req.query.elementContains+"*"}})
-      let elements=req.query.formulaContains.match(/.{1,2}/g)
+      let elements=req.query.formulaContains.split(/(?=[A-Z])/)
       let count = elements.length
       for (var i = 0; i < count;i++) {
           filters.push({"query_string":{"default_field":"formula","query":"*"+elements[i]+"*"}})
@@ -98,7 +98,7 @@ exports.init = function (app) {
     }
     if (req.query.formulaNotContains) {
       //filters.push({"wildcard":{"formula":"*"+req.query.elementContains+"*"}})
-      let elements=req.query.formulaNotContains.match(/.{1,2}/g)
+      let elements=req.query.formulaNotContains.split(/(?=[A-Z])/)
       let count = elements.length
       for (var i = 0; i < count;i++) {
           must_not.push({"query_string":{"default_field":"formula","query":"*"+elements[i]+"*"}})

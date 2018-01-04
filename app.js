@@ -10,6 +10,9 @@ app.set('view engine', 'pug');
 app.use(morgan('tiny'));
 app.use(express.static(__dirname + '/public'));
 
+const basicauth = require('basicauth-middleware');
+app.use(basicauth('c4g', 'renewable'));
+
 // ElasticSearch
 // -------------
 
