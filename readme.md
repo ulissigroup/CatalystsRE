@@ -14,3 +14,7 @@
 
 * Finally, visit `localhost:3000` in your browser to view the application. Enjoy!
 
+### Generating the json data file
+
+* use `python lib/etc/import.py YYY.pkl` to generate the json file in the same place. This json file needs to go do sm1.cheme.cmu.edu:~/CatalystsRE/data/ to update the running instance. 
+
