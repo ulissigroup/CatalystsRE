@@ -19,7 +19,7 @@ for (let i = 0; i < data.length; i++) {
 }
 
 let favoritePoints = {};
-let graphRange = [-3, 3];
+let graphRange = [-10, 10];
 
 /*************************************************************/
 //                         SELECTORS

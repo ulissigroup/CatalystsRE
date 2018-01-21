@@ -93,7 +93,10 @@ exports.init = function (app) {
       let elements=req.query.formulaContains.split(/(?=[A-Z])/)
       let count = elements.length
       for (var i = 0; i < count;i++) {
-          filters.push({"query_string":{"default_field":"formula","query":"*"+elements[i]+"*"}})
+          rangedict={}
+          rangedict["elements."+elements[i]]={"gte":1}
+          filters.push({"range":rangedict})
+          //filters.push({"query_string":{"default_field":"formula","query":"*"+elements[i]+"*"}})
       }
     }
     if (req.query.formulaNotContains) {
@@ -101,7 +104,8 @@ exports.init = function (app) {
       let elements=req.query.formulaNotContains.split(/(?=[A-Z])/)
       let count = elements.length
       for (var i = 0; i < count;i++) {
-          must_not.push({"query_string":{"default_field":"formula","query":"*"+elements[i]+"*"}})
+          must_not.push({"exists":{"field":"elements."+elements[i]}})
+          //must_not.push({"query_string":{"default_field":"formula","query":"*"+elements[i]+"*"}})
       }
     }
     if (req.query.catalog){
